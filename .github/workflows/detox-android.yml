@@ -20,7 +20,9 @@ jobs:
           java-version: "openjdk8"
           architecture: "x64"
       - name: list AVDs
-        run: $ANDROID_HOME/emulator/emulator -list-avds
+        run: |
+          ls ~/.android/avd
+          $ANDROID_HOME/emulator/emulator -list-avds
       # - uses: actions/checkout@v2
       #   with:
       #     fetch-depth: 0
