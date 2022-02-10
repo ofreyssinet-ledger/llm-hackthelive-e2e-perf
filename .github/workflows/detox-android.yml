@@ -10,8 +10,8 @@ on:
         required: true
 
 jobs:
-  echo-coucou:
-    name: "Echo coucou"
+  the-whole-thing:
+    name: "Detox E2E Android"
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v1
 
       - name: Use specific Java version for sdkmanager to work
-        uses: joschi/setup-jdk@v1
+        uses: joschi/setup-jdk@v2
         with:
           java-version: "openjdk8"
           architecture: "x64"
