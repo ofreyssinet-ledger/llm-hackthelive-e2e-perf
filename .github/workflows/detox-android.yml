@@ -38,6 +38,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Install node_modules
+        run: |
+          yarn install --frozen-lockfile
+
       - name: Use specific Java version for sdkmanager to work
         uses: joschi/setup-jdk@v2
         with:
