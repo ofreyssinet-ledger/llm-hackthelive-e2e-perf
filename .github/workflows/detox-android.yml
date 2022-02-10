@@ -14,54 +14,58 @@ jobs:
     name: "Detox E2E Android"
     runs-on: macos-latest
     steps:
-      - name: list AVDs
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: checkout PR
+        run: gh pr checkout ${{ github.event.issue.number || github.event.inputs.prNumber }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@main
+        with:
+          node-version: 14.x
+          cache: yarn
+      - name: get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - uses: actions/cache@v2
+        with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+      - name: Install node_modules
         run: |
-          ls ~/.android/avd
+          yarn install --frozen-lockfile
+      - name: Use specific Java version for sdkmanager to work
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: "openjdk8"
+          architecture: "x64"
+      - name: Build for detox
+        run: |
+          yarn detox build --configuration=android.debug
+      - name: Download Android Emulator Image
+        run: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;google_apis;x86"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
           $ANDROID_HOME/emulator/emulator -list-avds
-      # - uses: actions/checkout@v2
-      #   with:
-      #     fetch-depth: 0
-      # - name: checkout PR
-      #   run: gh pr checkout ${{ github.event.issue.number || github.event.inputs.prNumber }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - uses: actions/setup-node@main
-      #   with:
-      #     node-version: 14.x
-      #     cache: yarn
-      # - name: get yarn cache
-      #   id: yarn-cache
-      #   run: echo "::set-output name=dir::$(yarn cache dir)"
-      # - uses: actions/cache@v2
-      #   with:
-      #     path: ${{ steps.yarn-cache.outputs.dir }}
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-yarn-
-      # - name: Install node_modules
-      #   run: |
-      #     yarn install --frozen-lockfile
-      # - name: Use specific Java version for sdkmanager to work
-      #   uses: joschi/setup-jdk@v2
-      #   with:
-      #     java-version: "openjdk8"
-      #     architecture: "x64"
-      # - name: Build for detox
-      #   run: |
-      #     yarn detox build --configuration=android.debug
-      # - name: Download Android Emulator Image
-      #   run: |
-      #     echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;google_apis;x86"
-      #     echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
-      #     $ANDROID_HOME/emulator/emulator -list-avds
-      # - name: Android Emulator
-      #   timeout-minutes: 10
-      #   continue-on-error: true
-      #   run: |
-      #     echo "Starting emulator"
-      #     nohup $ANDROID_HOME/emulator/emulator -avd emu -no-audio -no-snapshot -no-window &
-      #     $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-      #     $ANDROID_HOME/platform-tools/adb devices
-      #     echo "Emulator started"
-      # - name: Android Detox
-      #   run: yarn detox test --configuration=android.debug
+      - name: Android Emulator
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator -avd emu -no-audio -no-snapshot -no-window &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          $ANDROID_HOME/platform-tools/adb devices
+          echo "Emulator started"
+      - name: Android Detox
+        run: yarn detox test --configuration=android.debug
