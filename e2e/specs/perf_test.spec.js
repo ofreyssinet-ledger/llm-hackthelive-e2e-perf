@@ -20,7 +20,7 @@ describe("Mobile E2E Test Engine", () => {
         const initialTime = Date.now();
         // await bridge.loadConfig("allLiveCoinsNoOperations", true);
         
-        await device.disableSynchronization();
+        // await device.disableSynchronization();
         const accountTabButton = element(by.id("TabBarAccounts"));
         await waitFor(accountTabButton)
         .toBeVisible();
@@ -44,7 +44,7 @@ describe("Mobile E2E Test Engine", () => {
           console.log("Trying again...");
         }
 
-        await device.enableSynchronization();
+        // await device.enableSynchronization();
 
 
         console.log(`Test finished, took ${(Date.now() - initialTime) / 1000}s to execute`);
