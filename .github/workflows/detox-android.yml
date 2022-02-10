@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: list AVDs
-        run: $ANDROID_HOME/tools/emulator -list-avds
+        run: $ANDROID_HOME/tools/emulator -list-avds > blabla && cat blabla
       # - uses: actions/checkout@v2
       #   with:
       #     fetch-depth: 0
