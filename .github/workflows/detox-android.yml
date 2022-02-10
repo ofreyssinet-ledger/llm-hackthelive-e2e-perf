@@ -14,8 +14,13 @@ jobs:
     name: "Detox E2E Android"
     runs-on: macos-latest
     steps:
+      - name: Use specific Java version for sdkmanager to work
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: "openjdk8"
+          architecture: "x64"
       - name: list AVDs
-        run: $ANDROID_HOME/emulator/emulator -list-avds > blabla && cat blabla
+        run: $ANDROID_HOME/emulator/emulator -list-avds
       # - uses: actions/checkout@v2
       #   with:
       #     fetch-depth: 0
@@ -39,11 +44,6 @@ jobs:
       # - name: Install node_modules
       #   run: |
       #     yarn install --frozen-lockfile
-      # - name: Use specific Java version for sdkmanager to work
-      #   uses: joschi/setup-jdk@v2
-      #   with:
-      #     java-version: "openjdk8"
-      #     architecture: "x64"
       # - name: Build for detox
       #   run: |
       #     yarn detox build --configuration=android.debug
