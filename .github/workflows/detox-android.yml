@@ -76,17 +76,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Install node_modules
+      - name: Install node dependencies
         run: |
           yarn install --frozen-lockfile
-      - name: Use specific Java version for sdkmanager to work
-        uses: joschi/setup-jdk@v2
-        with:
-          java-version: "openjdk8"
-          architecture: "x64"
-      - name: Build for detox
-        run: yarn detox build -c android.debug
-      - name: Run Detox Test(s)
+      - name: Build
+        run: yarn detox build -c android.staging
+      - name: Run
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
