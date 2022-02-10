@@ -44,15 +44,15 @@ jobs:
           java-version: "openjdk8"
           architecture: "x64"
 
+      - name: Build for detox
+        run: |
+          yarn detox build --configuration=android.debug
+
       - name: Download Android Emulator Image
         run: |
           echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;google_apis;x86"
           echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
           $ANDROID_HOME/emulator/emulator -list-avds
-
-      - name: Build for detox
-        run: |
-          yarn detox build --configuration=android.debug
       - name: Android Emulator
         timeout-minutes: 10
         continue-on-error: true
