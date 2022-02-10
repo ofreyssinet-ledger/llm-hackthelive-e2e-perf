@@ -18,7 +18,7 @@ describe("Mobile E2E Test Engine", () => {
 
       it("should import accounts", async () => {
         const initialTime = Date.now();
-        await bridge.loadConfig("allLiveCoinsNoOperations", true);
+        // await bridge.loadConfig("allLiveCoinsNoOperations", true);
         
         await device.disableSynchronization();
         const accountTabButton = element(by.id("TabBarAccounts"));
