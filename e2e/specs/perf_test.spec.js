@@ -1,13 +1,13 @@
 // @flow
 import { cleanLaunch, bridge } from "../engine";
-const { device, element, by, waitFor } = require("detox");
 
 import { $waitFor, $retryUntilItWorks } from "../engine/utils";
+
+const { device, element, by, waitFor } = require("detox");
 
 function wait(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
-
 
 describe("Mobile E2E Test Engine", () => {
   describe("Bridge", () => {
@@ -18,6 +18,7 @@ describe("Mobile E2E Test Engine", () => {
 
       it("should import accounts", async () => {
         const initialTime = Date.now();
+
         await device.disableSynchronization();
 
         await $retryUntilItWorks(async () => {
@@ -41,8 +42,10 @@ describe("Mobile E2E Test Engine", () => {
 
         await device.enableSynchronization();
 
-
-        console.log(`Test finished, took ${(Date.now() - initialTime) / 1000}s to execute`);
+        console.log(
+          `Test finished, took ${(Date.now() - initialTime) /
+            1000}s to execute`,
+        );
       });
     });
   });
