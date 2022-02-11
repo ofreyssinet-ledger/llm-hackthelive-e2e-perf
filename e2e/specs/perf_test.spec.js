@@ -1,7 +1,7 @@
 // @flow
 import { cleanLaunch, bridge } from "../engine";
 
-import { $waitFor } from "../engine/utils";
+import { $waitFor, $retryUntilItWorks } from "../engine/utils";
 
 const { device, element, by, waitFor } = require("detox");
 
@@ -18,29 +18,27 @@ describe("Mobile E2E Test Engine", () => {
 
       it("should import accounts", async () => {
         const initialTime = Date.now();
-        await bridge.loadConfig("allLiveCoinsNoOperations", true);
 
         await device.disableSynchronization();
-        const accountTabButton = element(by.id("TabBarAccounts"));
-        await waitFor(accountTabButton).toBeVisible();
-        await wait(1000);
-        await accountTabButton.tap();
 
-        let shouldContinue = true;
+        await $retryUntilItWorks(async () => {
+          await bridge.loadConfig("allLiveCoinsNoOperations", true);
+        });
 
-        while (shouldContinue) {
-          shouldContinue = false;
+        await $retryUntilItWorks(async () => {
+          const accountTabButton = element(by.id("TabBarAccounts"));
+          await waitFor(accountTabButton)
+            .toBeVisible();
+          await wait(1000);
+          await accountTabButton.tap();
+        });
+
+        await $retryUntilItWorks(async () => {
           const firstAccountButton = element(by.text("Komodo 1"));
-          await waitFor(firstAccountButton).toBeVisible();
-
-          try {
-            await firstAccountButton.tap();
-          } catch {
-            shouldContinue = true;
-          }
-
-          console.log("Trying again...");
-        }
+          await waitFor(firstAccountButton)
+            .toBeVisible();
+          await firstAccountButton.tap();
+        });
 
         await device.enableSynchronization();
 
