@@ -85,4 +85,7 @@ jobs:
         with:
           api-level: 29
           avd-name: emu
-          script: yarn detox test -c android.staging
+          script: |
+            curl -f -o ./temp/test-butler-app.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
+            adb install ./temp/test-butler-app.apk
+            yarn detox test -c android.staging
