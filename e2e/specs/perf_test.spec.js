@@ -1,13 +1,13 @@
 // @flow
 import { cleanLaunch, bridge } from "../engine";
-const { device, element, by, waitFor } = require("detox");
 
 import { $waitFor } from "../engine/utils";
+
+const { device, element, by, waitFor } = require("detox");
 
 function wait(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
-
 
 describe("Mobile E2E Test Engine", () => {
   describe("Bridge", () => {
@@ -19,22 +19,20 @@ describe("Mobile E2E Test Engine", () => {
       it("should import accounts", async () => {
         const initialTime = Date.now();
         await bridge.loadConfig("allLiveCoinsNoOperations", true);
-        
-        // await device.disableSynchronization();
+
+        await device.disableSynchronization();
         const accountTabButton = element(by.id("TabBarAccounts"));
-        await waitFor(accountTabButton)
-        .toBeVisible();
+        await waitFor(accountTabButton).toBeVisible();
         await wait(1000);
         await accountTabButton.tap();
 
         let shouldContinue = true;
 
-        while(shouldContinue) {
+        while (shouldContinue) {
           shouldContinue = false;
           const firstAccountButton = element(by.text("Komodo 1"));
-          await waitFor(firstAccountButton)
-          .toBeVisible();
-          
+          await waitFor(firstAccountButton).toBeVisible();
+
           try {
             await firstAccountButton.tap();
           } catch {
@@ -44,10 +42,12 @@ describe("Mobile E2E Test Engine", () => {
           console.log("Trying again...");
         }
 
-        // await device.enableSynchronization();
+        await device.enableSynchronization();
 
-
-        console.log(`Test finished, took ${(Date.now() - initialTime) / 1000}s to execute`);
+        console.log(
+          `Test finished, took ${(Date.now() - initialTime) /
+            1000}s to execute`,
+        );
       });
     });
   });
